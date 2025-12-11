@@ -1,93 +1,244 @@
-# testing_username_password
+# Exercise 2: Test-Driven Development (TDD)
 
+## Introduction
 
+In this exercise, you'll practice **Test-Driven Development (TDD)** by writing tests *before* writing any code. This forces you to think about requirements and edge cases upfront.
 
-## Getting started
+## The TDD Cycle
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Remember the cycle:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. 🔴 **RED** - Write a failing test
+2. 🟢 **GREEN** - Write minimal code to make it pass
+3. 🔵 **REFACTOR** - Clean up your code (tests still passing)
 
-## Add your files
+**Important:** Commit after each green phase!
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+---
 
+## Task 1: Password Strength Checker
+
+### Function Signature
+```python
+def is_password_strong(password: str) -> bool:
+    """
+    Check if a password meets strength requirements.
+    
+    Args:
+        password: The password string to validate
+        
+    Returns:
+        True if password is strong, False otherwise
+    """
+    pass  # You'll implement this after writing tests
 ```
-cd existing_repo
-git remote add origin https://git.unistra.fr/cours_test/testing_username_password.git
-git branch -M main
-git push -uf origin main
+
+### Requirements (implement progressively)
+
+Your password checker should validate:
+
+1. **Minimum length** - choose a minimum length
+2. **Contains uppercase** - At least one uppercase letter (A-Z)
+3. **Contains lowercase** - At least one lowercase letter (a-z)
+4. **Contains digit** - At least one number (0-9)
+5. **Contains special character** - At least one of: `!@#$%^&*()-_+=`
+6. **No Repeats ?** 
+
+### TDD Approach
+
+**Start simple, build incrementally:**
+
+#### Step 1: Test minimum length
+```python
+# test_password_strength.py
+from password_validator import is_password_strong
+
+def test_password_too_short():
+    assert is_password_strong("abc") is False
+
+def test_password_minimum_length():
+    assert is_password_strong("abcdefgh") is True  # Will fail on other rules later
 ```
 
-## Integrate with your tools
+**Now implement just enough code to pass these tests.**
 
-- [ ] [Set up project integrations](https://git.unistra.fr/cours_test/testing_username_password/-/settings/integrations)
+#### Step 2: Add uppercase requirement
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**Update your function to check for uppercase.**
 
-## Test and Deploy
+#### Step 3: Continue adding requirements
+- Add tests for lowercase (though most will already have it)
+- Add tests for digits
+- Add tests for special characters
 
-Use the built-in continuous integration in GitLab.
+#### Step 4: Comprehensive tests
+```python
+def test_password_all_requirements():
+    assert is_password_strong("Abcd1234!") is True
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+def test_password_missing_digit():
+    assert is_password_strong("Abcdefgh!") is False
 
-***
+def test_password_missing_special():
+    assert is_password_strong("Abcd1234") is False
+```
 
-# Editing this README
+### Edge Cases to Consider
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Write tests for:
+- Empty string
+- Very long password (max limit ?)
+- Password with only special characters
+- Password with spaces (decide: allow or reject?)
+- Unicode characters (decide: allow or reject?)
 
-## Suggestions for a good README
+### Bonus: Use Parametrize
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Refactor your tests using `@pytest.mark.parametrize`:
+```python
+@pytest.mark.parametrize("password,expected", [
+    ("abc", False),                    # Too short
+    ("abcdefgh", False),               # No uppercase, digit, special
+    ("Abcdefgh", False),               # No digit, special
+    ("Abcd1234", False),               # No special
+    ("Abcd1234!", True),               # Valid
+    ("", False),                       # Empty
+    ("P@ssw0rd", True),                # Valid
+    ("MyP@ss123", True),               # Valid
+])
+def test_password_strength(password, expected):
+    assert is_password_strong(password) == expected
+```
 
-## Name
-Choose a self-explaining name for your project.
+---
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Task 2: Email Validator
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Function Signature
+```python
+def is_email_valid(email: str) -> bool:
+    """
+    Check if an email address is valid.
+    
+    Args:
+        email: The email string to validate
+        
+    Returns:
+        True if email is valid, False otherwise
+    """
+    pass  # You'll implement this after writing tests
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Requirements (implement progressively)
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Your email validator should check:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+1. **Contains '@'** - Must have exactly one @ symbol
+2. **Has local part** - Text before @ (not empty)
+3. **Has domain** - Text after @ (not empty)
+4. **Domain has '.'** - Domain must contain at least one dot
+5. **Valid characters** - Only alphanumeric, dots, underscores, hyphens
+6. **Domain extension** - At least 2 characters after final dot
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Edge Cases to Consider
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Write tests for:
+- Empty string
+- Only @ symbol
+- Multiple dots in domain (`test@example..com`)
+- Starting/ending with dot (`test@.example.com` or `test.@example.com`)
+- Numbers in email (`user123@example.com`)
+- Subdomains (`test@mail.example.com`)
+- Special but valid characters in local part (`user+tag@example.com`)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Valid Email Examples
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+These should return `True`:
+- `user@example.com`
+- `first.last@company.co.uk`
+- `user_name@subdomain.example.com`
+- `user+tag@example.org`
+- `123@example.com`
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Invalid Email Examples
 
-## License
-For open source projects, say how it is licensed.
+These should return `False`:
+- `@example.com` (no local part)
+- `user@` (no domain)
+- `user@example` (no TLD)
+- `user example@test.com` (space)
+- `user@@example.com` (double @)
+- `user@.com` (no domain name)
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Bonus: Use Parametrize
+```python
+@pytest.mark.parametrize("email,expected", [
+    ("user@example.com", True),
+    ("@example.com", False),
+    ("user@", False),
+    ("invalid", False),
+    ("user@@example.com", False),
+    ("first.last@company.co.uk", True),
+    ("user@example", False),
+    ("", False),
+])
+def test_email_validation(email, expected):
+    assert is_email_valid(email) == expected
+```
+
+---
+
+## Project Structure
+```
+tdd_exercise/
+├── password_validator.py      # Your password checker implementation
+├── email_validator.py         # Your email validator implementation
+├── tests/
+│   ├── __init__.py
+│   ├── test_password_strength.py
+│   └── test_email_validator.py
+└── README.md
+```
+
+---
+
+## Step-by-Step Workflow
+
+For each requirement:
+
+1. **Write the test first** (it will fail - RED 🔴)
+```bash
+   pytest tests/test_password_strength.py -v
+```
+
+2. **Write minimal code** to make test pass (GREEN 🟢)
+```bash
+   pytest tests/test_password_strength.py -v
+```
+
+3. **Refactor** if needed (tests still pass - REFACTOR 🔵)
+
+4. **Commit** your changes
+```bash
+   git add .
+   git commit -m "Add password length validation"
+```
+
+5. **Repeat** for next requirement
+
+---
+
+
+
+
+
+## Resources
+
+- pytest documentation: https://docs.pytest.org/
+- Python `re` module: https://docs.python.org/3/library/re.html
+- Email RFC standards: https://datatracker.ietf.org/doc/html/rfc5322
+- Password security best practices: https://pages.nist.gov/800-63-3/
+
+Good luck! Remember: **RED → GREEN → REFACTOR**

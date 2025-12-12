@@ -1,0 +1,42 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'  # Ajuste selon ta version
+
+      # Installer pdoc
+      - run: pip install pdoc
+
+      # Générer la doc (ajuste le nom de ton module)
+      - run: pdoc strong_password.py --docformat google -o docs/
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

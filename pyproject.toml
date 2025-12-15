@@ -7,4 +7,5 @@ requires-python = ">=3.14"
 dependencies = [
     "pdoc>=16.0.0",
     "pytest>=9.0.2",
+    "streamlit>=1.52.1",
 ]

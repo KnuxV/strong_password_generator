@@ -36,10 +36,13 @@ if st.button("Générer"):
     st.success("Mot de passe copié dans le presse-papier!")
     
     # Analyze password strength
-    results = zxcvbn(password)
-    score = results["score"]
-    crack_time = results["crack_times_display"]["offline_slow_hashing_1e4_per_second"]
-    
+    try:
+        results = zxcvbn(password)
+        score = results["score"]
+        crack_time = results["crack_times_display"]["offline_slow_hashing_1e4_per_second"]
+    except ValueError:
+            score = 4    
+            crack_time = "centuries"
     # Display strength metrics
     st.divider()
     st.subheader("Force du mot de passe")

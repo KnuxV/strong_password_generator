@@ -1,25 +1,29 @@
 # Générateur de Mots de Passe Sécurisés
-
 Un générateur de mots de passe Python permettant de créer des mots de passe mémorables (basés sur des mots) ou aléatoires (basés sur des caractères).
 
 ## Documentation en ligne
-[ Lien vers la Dodcumentation ](  https://knuxv.github.io/strong_password_generator  )
+[Lien vers la Documentation](https://knuxv.github.io/strong_password_generator)  
+[Lien vers l'app Streamlit en ligne](https://strongpasswordgeneratorknux.streamlit.app/)
 
 ## Installation
 ```bash
 # Cloner le dépôt
-git clone <votre-repo>
+git clone https://github.com/KnuxV/strong_password_generator
 cd testing_username_password
 
+# Créer un environnement virtuel
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-# Installer les dépendances (si génération de documentation)
-# pip install pdoc
+# Installer les dépendances
+pip install pdoc
+pip install streamlit
+pip install zxcvbn
+
 ```
 
 ## Utilisation
-
 ### Ligne de commande
-
 Générer un mot de passe mémorable de 5 mots :
 ```bash
 python strong_password.py -t memorable -l 5
@@ -37,8 +41,19 @@ Utiliser la longueur par défaut (12) :
 python strong_password.py -t random
 ```
 
-### Options
+### Interface web Streamlit
+```bash
+streamlit run app.py
+```
+Interface interactive permettant de générer des mots de passe avec analyse de force en temps réel (score et temps de craquage estimé).
 
+### Analyse de force
+```bash
+python compute_crack_time.py
+```
+Script de démonstration comparant la force de mots de passe mémorables vs aléatoires avec estimation du temps de craquage via zxcvbn.
+
+### Options
 - `-t`, `--type` : Type de mot de passe (requis)
   - `memorable` : Mots de passe composés de mots
   - `random` : Mots de passe composés de caractères aléatoires
@@ -61,34 +76,37 @@ password = gen.generate()
 print(password)
 ```
 
-## Générer la documentation
+## Tests
+```bash
+pytest 
+```
+Suite de tests couvrant les mots de passe mémorables et aléatoires (longueur, caractères spéciaux, majuscules/minuscules).
 
+## Générer la documentation
 La documentation est générée automatiquement avec `pdoc`.
 
 ### Visualisation locale
-
 Lancer un serveur de documentation avec rechargement automatique :
 ```bash
 pdoc strong_password.py --docformat google
 ```
-
 Puis ouvrir http://localhost:8080 dans votre navigateur.
 
 ### Génération HTML statique
-
 Créer la documentation dans le dossier `docs/` :
 ```bash
 pdoc strong_password.py --docformat google -o docs/
 ```
 
 ### GitHub Pages
-
 La documentation est automatiquement déployée sur GitHub Pages à chaque push sur la branche `main` via GitHub Actions.
-
 URL de la documentation : `https://knuxv.github.io/strong_password_generator`
 
 ## Fichiers
-
 - `strong_password.py` : Module principal
+- `app.py` : Interface Streamlit interactive
+- `compute_crack_time.py` : Script de démonstration d'analyse de force
+- `tests/` : Suite de tests pytest
 - `data/eff_large_wordlist.txt` : Liste de mots EFF pour les mots de passe mémorables
-- `.github/workflows/docs.yml` : Configuration GitHub Actions pour la documentation
+- `.github/workflows/docs.yml` : CI/CD pour la documentation
+- `.github/workflows/tests.yml` : CI/CD pour les tests automatiques

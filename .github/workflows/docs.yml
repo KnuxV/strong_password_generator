@@ -22,7 +22,7 @@ jobs:
       - run: pip install pdoc
 
       # Générer la doc (ajuste le nom de ton module)
-      - run: pdoc strong_password.py --docformat google -o docs/
+      - run: pdoc strong_password.py compute_crack_time.py app.py --docformat google -o docs/
 
       - uses: actions/upload-pages-artifact@v4
         with:

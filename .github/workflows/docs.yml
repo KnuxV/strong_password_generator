@@ -19,6 +19,7 @@ jobs:
           python-version: '3.14'  # Ajuste selon ta version
 
       # Installer pdoc
+      - run: pip install -r requirements.txt
       - run: pip install pdoc
 
       # Générer la doc (ajuste le nom de ton module)

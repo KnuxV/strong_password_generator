@@ -11,5 +11,5 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-      - run: pip install pytest
+      - run: pip install pytest zxcvbn pdoc
       - run: pytest tests/

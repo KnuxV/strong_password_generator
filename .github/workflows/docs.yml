@@ -20,7 +20,7 @@ jobs:
 
       # Installer pdoc
       - run: pip install -r requirements.txt
-      - run: pip install zxcvbn pdo cpytest pytest-md pytest-emoji
+      - run: pip install zxcvbn pdoc pytest pytest-md pytest-emoji
 
 
       # Générer la doc (ajuste le nom de ton module)

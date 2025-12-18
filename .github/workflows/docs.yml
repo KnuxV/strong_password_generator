@@ -20,7 +20,8 @@ jobs:
 
       # Installer pdoc
       - run: pip install -r requirements.txt
-      - run: pip install pdoc
+      - run: pip install zxcvbn pdo cpytest pytest-md pytest-emoji
+
 
       # Générer la doc (ajuste le nom de ton module)
       - run: pdoc strong_password.py compute_crack_time.py app.py --docformat google -o docs/

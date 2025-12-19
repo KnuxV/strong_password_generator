@@ -15,8 +15,9 @@ Deux types de génération :
 """
 
 import argparse
-import random
-from enum import StrEnum, auto
+import secrets
+from enum import auto
+from strenum import StrEnum
 
 # CONSTANTS
 LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
@@ -84,7 +85,8 @@ class StrongPassword:
         Returns:
             str: Mots séparés par des espaces (ex: "Stubbed Congress Tiptop").
         """
-        lst_memorable_words: list[str] = random.choices(WORD_LIST, k=self.length)
+        # lst_memorable_words: list[str] = secrets.choices(WORD_LIST, k=self.length)
+        lst_memorable_words: list[str] = [secrets.choice(WORD_LIST) for _ in range(self.length)]
         return " ".join(lst_memorable_words)
 
     def generate_random(self) -> str:
@@ -100,8 +102,9 @@ class StrongPassword:
         password: list[str] = []
         for i in range(self.length):
             # Cycle : minuscule (0) → majuscule (1) → chiffre (2) → spécial (3)
-            password.append(random.choice(char_sets[i % 4]))
-        random.shuffle(password)
+            password.append(secrets.choice(char_sets[i % 4]))
+
+        secrets.SystemRandom().shuffle(password)
         return "".join(password)
 
 
